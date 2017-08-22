@@ -1,0 +1,45 @@
+﻿using System;
+using Terraria;
+using TerrariaApi.Server;
+
+namespace DeadlockDetector
+{
+    [ApiVersion(2, 1)]
+    public sealed class DdPlugin : TerrariaPlugin
+    {
+        public override string Name => GetType().Namespace;
+
+        public override string Author => "MistZZT";
+
+        public override string Description => GetType().Namespace;
+
+        public override Version Version => GetType().Assembly.GetName().Version;
+
+        public DdPlugin(Main game) : base(game)
+        {
+        }
+
+        public override void Initialize()
+        {
+            ServerApi.Hooks.GamePostInitialize.Register(this, OnPostInit);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                ServerApi.Hooks.GamePostInitialize.Deregister(this, OnPostInit);
+
+                _detector.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void OnPostInit(EventArgs args)
+        {
+            _detector = new Detector(this);
+        }
+
+        private Detector _detector;
+    }
+}
