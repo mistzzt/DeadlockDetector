@@ -5,11 +5,11 @@ using TerrariaApi.Server;
 
 namespace DeadlockDetector
 {
-    public sealed class Detector : IDisposable
+    public sealed class Checker : IDisposable
     {
         public Timer Timer { get; }
 
-        public Detector(DdPlugin plugin)
+        public Checker(DdPlugin plugin)
         {
             _plugin = plugin;
             Timer = new Timer(TimerCallback, null, TimeSpan.Zero, TimeSpan.FromMinutes(2));
@@ -27,7 +27,7 @@ namespace DeadlockDetector
 
         private bool Check()
         {
-            
+            // code goes here
             
             return false;
         }

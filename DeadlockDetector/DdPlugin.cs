@@ -30,16 +30,16 @@ namespace DeadlockDetector
             {
                 ServerApi.Hooks.GamePostInitialize.Deregister(this, OnPostInit);
 
-                _detector.Dispose();
+                _checker.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private void OnPostInit(EventArgs args)
         {
-            _detector = new Detector(this);
+            _checker = new Checker(this);
         }
 
-        private Detector _detector;
+        private Checker _checker;
     }
 }
