@@ -12,19 +12,13 @@ namespace DeadlockDetector
         public Detector(DdPlugin plugin)
         {
             _plugin = plugin;
-            Timer = new Timer(TimerCallback, null, TimeSpan.FromMinutes(20), TimeSpan.FromMinutes(10));
-
-            ServerApi.Hooks.GameUpdate.Register(_plugin, OnUpdate);
-        }
-
-        private void OnUpdate(EventArgs args)
-        {
-            _lastUpdateTime = DateTime.Now;
+            Timer = new Timer(TimerCallback, null, TimeSpan.Zero, TimeSpan.FromMinutes(2));
         }
 
         private void TimerCallback(object state)
         {
             var shouldRestartServer = Check();
+            TShockAPI.TShock.Log.ConsoleInfo("Check status: " + shouldRestartServer);
             if (!shouldRestartServer) return;
 
             WorldFile.saveWorld(false);
@@ -33,7 +27,9 @@ namespace DeadlockDetector
 
         private bool Check()
         {
-            return (DateTime.Now - _lastUpdateTime).Seconds > 60;
+            
+            
+            return false;
         }
 
         public void Dispose()
@@ -41,16 +37,12 @@ namespace DeadlockDetector
             if (_disposed)
                 return;
 
-            ServerApi.Hooks.GameUpdate.Deregister(_plugin, OnUpdate);
-
             Timer.Dispose();
 
             _disposed = true;
         }
 
         private bool _disposed;
-
-        private DateTime _lastUpdateTime;
 
         private readonly DdPlugin _plugin;
     }
