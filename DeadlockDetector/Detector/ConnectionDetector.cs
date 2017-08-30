@@ -1,11 +1,13 @@
-﻿using System.IO;
+﻿#define CHECKRESPONSE
+
+using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using Terraria.Net;
 using Terraria.Net.Sockets;
 using TShockAPI;
-
-#define CHECKRESPONSE
 
 namespace DeadlockDetector.Detector
 {
@@ -35,10 +37,7 @@ namespace DeadlockDetector.Detector
         {
             try
             {
-                if (_socket == null)
-                {
-                    _socket = CreateSocket();
-                }
+                _socket = CreateSocket();
 
                 _working = true;
                 Log("start working");
@@ -61,6 +60,10 @@ namespace DeadlockDetector.Detector
                     Log("connection failed");
                 }
 
+                Log(ex.ToString());
+                
+                CloseSocket();
+
                 return true;
             }
 
@@ -71,12 +74,17 @@ namespace DeadlockDetector.Detector
 
                 while (_working)
                 {
+                    Thread.Sleep(100);
                 }
+            }
+            catch (Exception ex)
+            {
+                Log("Unhandled exception in socket send & receive");
+                Log(ex.ToString());
             }
             finally
             {
-                _socket?.Close();
-                _socket = null;
+                CloseSocket();
             }
 
             return _status;
@@ -99,11 +107,20 @@ namespace DeadlockDetector.Detector
 #endif
 
             _working = false;
+            Log("working stopped");
         }
 
         private void SendCallback(object state)
         {
             Log("sent");
+        }
+
+        private void CloseSocket()
+        {
+            _socket.Close();
+            _socket = null;
+            
+            Log("Socket closed");
         }
 
         private int WriteVersion()

@@ -13,7 +13,7 @@ namespace DeadlockDetector
         {
             _plugin = plugin;
             _detector = detector;
-            Timer = new Timer(TimerCallback, null, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(2));
+            Timer = new Timer(TimerCallback, null, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5));
         }
 
         private void TimerCallback(object state)
