@@ -1,4 +1,5 @@
 ﻿using System;
+using DeadlockDetector.Detector;
 using Terraria;
 using TerrariaApi.Server;
 
@@ -37,7 +38,7 @@ namespace DeadlockDetector
 
         private void OnPostInit(EventArgs args)
         {
-            _checker = new Checker(this);
+            _checker = new Checker(this, new ConnectionDetector());
         }
 
         private Checker _checker;

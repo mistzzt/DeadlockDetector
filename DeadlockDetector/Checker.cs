@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
+using DeadlockDetector.Detector;
 using Terraria.IO;
-using TerrariaApi.Server;
 
 namespace DeadlockDetector
 {
@@ -9,10 +9,11 @@ namespace DeadlockDetector
     {
         public Timer Timer { get; }
 
-        public Checker(DdPlugin plugin)
+        public Checker(DdPlugin plugin, IDetector detector)
         {
             _plugin = plugin;
-            Timer = new Timer(TimerCallback, null, TimeSpan.Zero, TimeSpan.FromMinutes(2));
+            _detector = detector;
+            Timer = new Timer(TimerCallback, null, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(2));
         }
 
         private void TimerCallback(object state)
@@ -20,16 +21,15 @@ namespace DeadlockDetector
             var shouldRestartServer = Check();
             TShockAPI.TShock.Log.ConsoleInfo("Check status: " + shouldRestartServer);
             if (!shouldRestartServer) return;
-
+            
+            TShockAPI.TShock.Log.ConsoleError("开始重启服务器……");
             WorldFile.saveWorld(false);
             Environment.Exit(1);
         }
 
         private bool Check()
         {
-            // code goes here
-            
-            return false;
+            return _detector.Detect();
         }
 
         public void Dispose()
@@ -45,5 +45,7 @@ namespace DeadlockDetector
         private bool _disposed;
 
         private readonly DdPlugin _plugin;
+        
+        private readonly IDetector _detector;
     }
 }

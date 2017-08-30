@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="DdPlugin.cs" />
     <Compile Include="Checker.cs" />
+      <Compile Include="Detector\ConnectionDetector.cs"/>
+      <Compile Include="Detector\IDetector.cs"/>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
