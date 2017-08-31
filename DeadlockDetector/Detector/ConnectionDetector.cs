@@ -1,6 +1,4 @@
-﻿#define CHECKRESPONSE
-
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -23,7 +21,10 @@ namespace DeadlockDetector.Detector
         private bool _status;
 
         private readonly int _versionStrLength;
+
+#if CHECKRESPONSE
         private readonly byte[] _connectResponse = {0x04, 0x00, 0x03, 0x00};
+#endif
 
         public ConnectionDetector()
         {
@@ -61,7 +62,7 @@ namespace DeadlockDetector.Detector
                 }
 
                 Log(ex.ToString());
-                
+
                 CloseSocket();
 
                 return true;
@@ -72,9 +73,14 @@ namespace DeadlockDetector.Detector
                 _socket.AsyncSend(_writeBuffer, 0, _versionStrLength, SendCallback);
                 _socket.AsyncReceive(_readBuffer, 0, _readBuffer.Length, ReceiveCallback);
 
-                while (_working)
+                for (var i = 0; i < 3; i++)
                 {
-                    Thread.Sleep(100);
+                    if (!_working)
+                    {
+                        break;
+                    }
+
+                    Thread.Sleep(1000);
                 }
             }
             catch (Exception ex)
@@ -87,7 +93,7 @@ namespace DeadlockDetector.Detector
                 CloseSocket();
             }
 
-            return _status;
+            return _working || _status;
         }
 
         private void ReceiveCallback(object state, int size)
@@ -119,7 +125,7 @@ namespace DeadlockDetector.Detector
         {
             _socket.Close();
             _socket = null;
-            
+
             Log("Socket closed");
         }
 
