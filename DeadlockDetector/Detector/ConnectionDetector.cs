@@ -11,6 +11,8 @@ namespace DeadlockDetector.Detector
 {
     public class ConnectionDetector : IDetector
     {
+        private const int TerrariaVersion = 194;
+        
         private ISocket _socket;
 
         private readonly byte[] _readBuffer = new byte[1024];
@@ -133,9 +135,9 @@ namespace DeadlockDetector.Detector
         {
             _writer.BaseStream.Position = 0L;
             var position = _writer.BaseStream.Position;
-            _writer.BaseStream.Position += 2L;
+            _writer.BaseStream.Position += sizeof(short);
             _writer.Write((byte) 1);
-            _writer.Write("Terraria" + 194);
+            _writer.Write("Terraria" + TerrariaVersion);
             var end = (int) _writer.BaseStream.Position;
             _writer.BaseStream.Position = position;
             _writer.Write((short) end);
@@ -146,7 +148,7 @@ namespace DeadlockDetector.Detector
 
         public string Name => GetType().Name;
 
-        /*[System.Diagnostics.Conditional("DEBUG")]*/
+        [System.Diagnostics.Conditional("DEBUG")]
         private static void Log(string format, params object[] args)
         {
             TShock.Log.ConsoleInfo(format, args);

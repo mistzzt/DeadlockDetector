@@ -38,7 +38,7 @@ namespace DeadlockDetector
 
         private void OnPostInit(EventArgs args)
         {
-            _checker = new Checker(this, new ConnectionDetector());
+            _checker = new Checker(new ConnectionDetector());
         }
 
         private Checker _checker;
